@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Flashcard App - Fixed</title>
+
+<style>
+body {
+    font-family: Arial;
+    background: #eef2f7;
+    text-align: center;
+}
+
+.container {
+    width: 420px;
+    margin: auto;
+    margin-top: 40px;
+}
+
+.card {
+    background: white;
+    padding: 20px;
+    border-radius: 12px;
+    min-height: 120px;
+    margin-bottom: 15px;
+}
+
+.hidden {
+    display: none;
+}
+
+button {
+    padding: 10px;
+    margin: 5px;
+    border: none;
+    background: #4CAF50;
+    color: white;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+button:hover {
+    background: #45a049;
+}
+
+input {
+    width: 90%;
+    padding: 10px;
+    margin: 8px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+    <h1>📚 Flashcard App (Final Fix)</h1>
+
+    <div class="card">
+        <h3 id="question"></h3>
+        <p id="answer" class="hidden"></p>
+    </div>
+
+    <button id="showBtn">Show Answer</button>
+
+    <div>
+        <button id="prevBtn">Previous</button>
+        <button id="nextBtn">Next</button>
+    </div>
+
+    <hr>
+
+    <h3>Manage Flashcards</h3>
+
+    <input type="text" id="qInput" placeholder="Enter Question">
+    <input type="text" id="aInput" placeholder="Enter Answer">
+
+    <div>
+        <button id="addBtn">Add</button>
+        <button id="updateBtn">Update</button>
+        <button id="deleteBtn">Delete</button>
+    </div>
+</div>
+
+<script>
+// DATA
+let flashcards = JSON.parse(localStorage.getItem("flashcards")) || [
+    { question: "What is HTML?", answer: "HyperText Markup Language" },
+    { question: "What is CSS?", answer: "Cascading Style Sheets" },
+    { question: "What is JavaScript?", answer: "Programming language for web" }
+];
+
+let currentIndex = 0;
+
+// ELEMENTS
+const questionEl = document.getElementById("question");
+const answerEl = document.getElementById("answer");
+const qInput = document.getElementById("qInput");
+const aInput = document.getElementById("aInput");
+
+// DISPLAY
+function displayCard() {
+    if (flashcards.length === 0) return;
+
+    const card = flashcards[currentIndex];
+
+    questionEl.innerText = card.question;
+    answerEl.innerText = card.answer;
+    answerEl.classList.add("hidden");
+
+    qInput.value = card.question;
+    aInput.value = card.answer;
+}
+
+// SAVE
+function saveData() {
+    localStorage.setItem("flashcards", JSON.stringify(flashcards));
+}
+
+// EVENTS (NO onclick bugs)
+
+// SHOW
+document.getElementById("showBtn").addEventListener("click", () => {
+    answerEl.classList.remove("hidden");
+});
+
+// NEXT
+document.getElementById("nextBtn").addEventListener("click", () => {
+    if (currentIndex < flashcards.length - 1) {
+        currentIndex++;
+        displayCard();
+    } else {
+        alert("Last card reached");
+    }
+});
+
+// PREVIOUS
+document.getElementById("prevBtn").addEventListener("click", () => {
+    if (currentIndex > 0) {
+        currentIndex--;
+        displayCard();
+    } else {
+        alert("First card");
+    }
+});
+
+// ADD (FIXED)
+document.getElementById("addBtn").addEventListener("click", () => {
+    const q = qInput.value.trim();
+    const a = aInput.value.trim();
+
+    if (!q || !a) {
+        alert("Enter both fields!");
+        return;
+    }
+
+    flashcards.push({ question: q, answer: a });
+    currentIndex = flashcards.length - 1;
+
+    saveData();
+    displayCard();
+
+    alert("Added successfully!");
+});
+
+// UPDATE
+document.getElementById("updateBtn").addEventListener("click", () => {
+    const q = qInput.value.trim();
+    const a = aInput.value.trim();
+
+    if (!q || !a) {
+        alert("Fill both fields!");
+        return;
+    }
+
+    flashcards[currentIndex] = { question: q, answer: a };
+
+    saveData();
+    displayCard();
+
+    alert("Updated!");
+});
+
+// DELETE
+document.getElementById("deleteBtn").addEventListener("click", () => {
+    if (flashcards.length === 1) {
+        alert("Cannot delete last card!");
+        return;
+    }
+
+    flashcards.splice(currentIndex, 1);
+    currentIndex = 0;
+
+    saveData();
+    displayCard();
+
+    alert("Deleted!");
+});
+
+// INIT
+displayCard();
+</script>
+
+</body>
+</html>

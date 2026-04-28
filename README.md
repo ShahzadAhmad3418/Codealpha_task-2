@@ -1,1 +1,1 @@
-# Codealpha_task-2
+# Codealpha_Artificial Intelligence Tasks & Instructions
